@@ -1,6 +1,5 @@
 from flask import Flask
 from flask import render_template
-import qrcode
 
 app = Flask(__name__)
 
