@@ -1,0 +1,32 @@
+# Flask specific
+instance/
+.webassets-cache
+
+# Environments
+.env
+.flaskenv
+
+# Python virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python caching and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Databases
+*.db
+*.sqlite
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDEs and OS files
+.vscode/
+.idea/
+.DS_Store
