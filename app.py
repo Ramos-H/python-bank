@@ -3,6 +3,11 @@ from flask import render_template
 
 app = Flask(__name__)
 
+@app.route("/health")
+def health():
+    return 'Banking Service is working properly.'
+
+
 @app.route("/dashboard")
 def dashboard():
     return render_template(
