@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/health")
 def health():
-    return 'Banking Service is working properly.'
+    return {'status': 'ok'}, 200
 
 
 @app.route("/dashboard")
