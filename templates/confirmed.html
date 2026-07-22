@@ -113,6 +113,12 @@
 
                 </div>
 
+                <div class="alert alert-info mt-4 text-center">
+                    Redirecting to the dashboard in
+                    <strong><span id="countdown">5</span></strong>
+                    seconds...
+                </div>
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
 
                     <a class="btn btn-primary">
@@ -135,6 +141,11 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
 
+    <script>
+        setTimeout(function () {
+            window.location.href = "{{ url_for('dashboard') }}";
+        }, 5000);
+    </script>
 </body>
 
 </html>
