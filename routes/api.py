@@ -74,7 +74,7 @@ def process_payment():
         except Exception as e:
             api_routes.logger.error(f"Failed to trigger callback to e-commerce app: {e}")
 
-    return redirect(url_for('confirmed', 
+    return redirect(url_for('web_routes.confirmed', 
                             ref=f"TXN-{tx.id}", 
                             amount=amount_str, 
                             recipient=merchant_account,

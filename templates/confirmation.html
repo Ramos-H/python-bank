@@ -104,22 +104,22 @@
                     payment for the amount shown above.
                 </div>
 
-                <form method="POST" action="{{ url_for('process_payment') }}">
-                <input type="hidden" name="order_id" value="{{ order.id }}">
-                <input type="hidden" name="amount" value="{{ order.total }}">
-                <input type="hidden" name="merchant_account" value="{{ merchant_account }}">
+                <form method="POST" action="{{ url_for('api_routes.process_payment') }}">
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <input type="hidden" name="amount" value="{{ order.total }}">
+                    <input type="hidden" name="merchant_account" value="{{ merchant_account }}">
 
-                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
 
-                    <a href="/" class="btn btn-outline-secondary">
-                        Cancel
-                    </a>
+                        <a href="/" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
 
-                    <button type="submit" class="btn btn-success">
-                        Confirm Payment
-                    </button>
+                        <button type="submit" class="btn btn-success">
+                            Confirm Payment
+                        </button>
 
-                </div>
+                    </div>
 
                 </form>
 

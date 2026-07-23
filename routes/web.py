@@ -6,7 +6,7 @@ web_routes = Blueprint('web_routes', __name__)
 
 @web_routes.route("/")
 def index():
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('web_routes.dashboard'))
 
 
 @web_routes.route("/dashboard")
