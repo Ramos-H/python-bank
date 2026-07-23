@@ -15,7 +15,7 @@ def get_db_uri():
         # Use an absolute SQLite file in the repo directory or in-memory
         if os.environ.get('FLASK_ENV') == 'testing':
             return 'sqlite:///:memory:'
-        return 'sqlite:///C:/Users/ABS83779/banking_app/python-bank/bank.db'
+        return 'sqlite:///C:/Users/HRR83780/OneDrive - EastWest Banking Corporation/Documents/python-bank/bank.db'
     
     return f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
