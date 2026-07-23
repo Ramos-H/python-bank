@@ -76,10 +76,10 @@ properties:
   volumes:
   - name: mysql-data
     azureFile:
-      shareName: mysql-share
-      storageAccountName: qrstorageaccount
+      shareName: flowershop-fileshare
+      storageAccountName: flowershop
       storageAccountKey: storagekeyplaceholder
   imageRegistryCredentials:
   - server: flowershop.azurecr.io
-    username: qrregistry
+    username: flowershop
     password: registrykeyplaceholder
