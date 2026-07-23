@@ -1,0 +1,85 @@
+apiVersion: '2021-10-01'
+location: eastus
+name: qr-payment-test-group
+properties:
+  containers:
+  - name: banking-app
+    properties:
+      image: qrregistry.azurecr.io/banking-app:latest
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 1.5
+      ports:
+      - port: 5000
+      environmentVariables:
+      - name: DB_HOST
+        value: localhost
+      - name: DB_USER
+        value: root
+      - name: DB_PASSWORD
+        value: rootpassword
+      - name: DB_NAME
+        value: banking
+      - name: ECOMMERCE_CALLBACK_URL
+        value: http://localhost:5001/payment-callback
+      - name: SECRET_KEY
+        value: test_secret_key_123
+  - name: ecommerce-app
+    properties:
+      image: qrregistry.azurecr.io/ecommerce-app:latest
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 1.5
+      ports:
+      - port: 5001
+      environmentVariables:
+      - name: DB_HOST
+        value: localhost
+      - name: DB_USER
+        value: root
+      - name: DB_PASSWORD
+        value: rootpassword
+      - name: DB_NAME
+        value: ecommerce
+      - name: BANKING_API_URL
+        value: http://localhost:5000
+  - name: mysql
+    properties:
+      image: mysql:8.0
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 2.0
+      ports:
+      - port: 3306
+      environmentVariables:
+      - name: MYSQL_ROOT_PASSWORD
+        value: rootpassword
+      - name: MYSQL_DATABASE
+        value: banking
+      volumeMounts:
+      - mountPath: /var/lib/mysql
+        name: mysql-data
+  osType: Linux
+  ipAddress:
+    type: Public
+    ports:
+    - protocol: tcp
+      port: 80
+    - protocol: tcp
+      port: 5000
+    - protocol: tcp
+      port: 5001
+    dnsNameLabel: qr-payment-test-group
+  volumes:
+  - name: mysql-data
+    azureFile:
+      shareName: mysql-share
+      storageAccountName: qrstorageaccount
+      storageAccountKey: storagekeyplaceholder
+  imageRegistryCredentials:
+  - server: qrregistry.azurecr.io
+    username: qrregistry
+    password: registrykeyplaceholder
