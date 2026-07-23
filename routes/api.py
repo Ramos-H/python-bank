@@ -3,6 +3,9 @@ import os
 import requests
 from decimal import Decimal
 from models import db, Account, Transaction
+import random
+import qrcode
+from pathlib import Path
 
 api_routes = Blueprint('api_routes', __name__)
 
@@ -79,6 +82,29 @@ def process_payment():
                             amount=amount_str, 
                             recipient=merchant_account,
                             date=tx.timestamp.strftime("%B %d, %Y")))
+
+@api_routes.route("/get-payment-link", methods=["GET"])
+def get_qr_url():
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+
+    order_id = random.randint(1, 100_000_000_000)
+    amount = data.get("amount", 0)
+
+    hostname="http://127.0.0.1:5000"
+    result = url_for('web_routes.confirmation', order_id=order_id, merchant_account="bloomcart-flowers", amount=amount)
+    img = qrcode.make(f"{hostname}{result}")
+
+    path = Path("static")
+
+    path.mkdir(parents=True, exist_ok=True)
+
+    filename=f"qr-{order_id}.png"
+    img.save(f"static/{filename}")
+    return {"url": f"{hostname}{url_for('static', filename=filename)}"}, 200
+
 
 @api_routes.route("/pay", methods=["POST"])
 def pay_api():
