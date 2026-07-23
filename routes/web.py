@@ -77,7 +77,7 @@ def confirmation():
     }
 
     payment = {
-        "method": "MyBank Account Transfer",
+        "method": "NorthSouth Account Transfer",
         "masked_account": "Maria Makiling (****1234)"
     }
 
