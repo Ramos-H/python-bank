@@ -19,8 +19,9 @@ with app.app_context():
     except Exception as e:
         app.logger.error(f"Error seeding database on startup: {e}")
 
+# Register blueprints (register api_routes without /api prefix to match form actions)
 app.register_blueprint(web.web_routes)
-app.register_blueprint(api.api_routes, url_prefix="/api")
+app.register_blueprint(api.api_routes)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=env.vars['APP_PORT'])

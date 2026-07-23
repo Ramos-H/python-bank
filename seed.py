@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import os
+>>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
 from flask import Flask
 from models import db, Account
 from decimal import Decimal
@@ -8,6 +12,7 @@ def get_db_uri():
     db_host = os.environ.get('DB_HOST', 'localhost')
     db_port = os.environ.get('DB_PORT', '3306')
     db_name = os.environ.get('DB_NAME', 'banking')
+<<<<<<< HEAD
     
     # Support SQLite for local/test run if specified
     if os.environ.get('FLASK_ENV') == 'testing' or os.environ.get('USE_SQLITE', 'false').lower() == 'true':
@@ -16,12 +21,25 @@ def get_db_uri():
             return 'sqlite:///:memory:'
         return 'sqlite:///C:/Users/HRR83780/OneDrive - EastWest Banking Corporation/Documents/python-bank/bank.db'
     
+=======
+
+    # Support SQLite for local/test run if specified
+    if os.environ.get('FLASK_ENV') == 'testing' or os.environ.get('USE_SQLITE', 'false').lower() == 'true':
+        if os.environ.get('FLASK_ENV') == 'testing':
+            return 'sqlite:///:memory:'
+        return 'sqlite:///C:/Users/HRR83780/OneDrive - EastWest Banking Corporation/Documents/python-bank/bank.db'
+
+>>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
     return f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
 def seed_db(app=None):
     if app is None:
         app = Flask(__name__)
+<<<<<<< HEAD
         app.config['SQLALCHEMY_DATABASE_URI'] = env.vars['SQLALCHEMY_DATABASE_URI']
+=======
+        app.config['SQLALCHEMY_DATABASE_URI'] = get_db_uri()
+>>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         db.init_app(app)
 
@@ -89,4 +107,8 @@ def seed_db(app=None):
         print("Seeding complete.")
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     seed_db()
+=======
+    seed_db()
+>>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
