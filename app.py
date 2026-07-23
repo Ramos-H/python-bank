@@ -1,8 +1,6 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask
 import os
-import requests
-from decimal import Decimal
-from models import db, Account, Transaction
+from models import db
 from seed import get_db_uri, seed_db
 from routes import web, api
 

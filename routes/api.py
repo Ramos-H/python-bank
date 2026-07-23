@@ -1,9 +1,8 @@
-from flask import Flask, request, redirect, url_for, Blueprint
+from flask import request, redirect, url_for, Blueprint
 import os
 import requests
 from decimal import Decimal
 from models import db, Account, Transaction
-from seed import get_db_uri, seed_db
 
 api_routes = Blueprint('api_routes', __name__)
 
