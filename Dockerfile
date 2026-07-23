@@ -3,7 +3,7 @@ FROM python:3.11-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV APP_PORT=5001
+ENV FLASK_RUN_PORT=5001
 
 # Create working directory
 WORKDIR /app

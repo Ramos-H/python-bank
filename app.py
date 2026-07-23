@@ -23,4 +23,4 @@ app.register_blueprint(web.web_routes)
 app.register_blueprint(api.api_routes, url_prefix="/api")
 
 if __name__ == "__main__":
-    app.run(host=env.vars['APP_HOSTNAME'], port=env.vars['APP_PORT'])
+    app.run(host='0.0.0.0', port=env.vars['APP_PORT'])
