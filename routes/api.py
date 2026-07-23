@@ -79,8 +79,10 @@ def process_payment():
 
     return redirect(url_for('web_routes.confirmed', 
                             ref=f"TXN-{tx.id}", 
+                            order_id=order_id,
                             amount=amount_str, 
                             recipient=merchant_account,
+                            status="PAID",
                             date=tx.timestamp.strftime("%B %d, %Y")))
 
 @api_routes.route("/get-payment-link", methods=["POST"])

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 import datetime
 from models import Account, Transaction
+import env
 
 web_routes = Blueprint('web_routes', __name__)
 
@@ -91,9 +92,19 @@ def confirmation():
 @web_routes.route("/confirmed")
 def confirmed():
     ref = request.args.get('ref', 'TXN-UNKNOWN')
+    order_id = request.args.get("order_id", "")
     amount = request.args.get('amount', '0.00')
     recipient = request.args.get('recipient', 'Unknown')
+    status = request.args.get("status", "PAID")
     date = request.args.get('date', datetime.datetime.utcnow().strftime("%B %d, %Y"))
+
+    ecommerce_redirect_url = (
+        f"{env.vars['ECOMMERCE_SUCCESS_URL']}"
+        f"?order_id={order_id}"
+        f"&amount={amount}"
+        f"&status={status}"
+        f"&reference_number={ref}"
+    )
 
     return render_template(
         "confirmed.html",
@@ -101,5 +112,6 @@ def confirmed():
         amount=amount,
         recipient=recipient,
         payment_date=date,
-        payment_method="Bank Transfer"
+        payment_method="Bank Transfer",
+        ecommerce_redirect_url=ecommerce_redirect_url
     )
