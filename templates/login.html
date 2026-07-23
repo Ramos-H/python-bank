@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureBank | Login</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .banking-banner {
+            background: linear-gradient(135deg,
+                    #0d6efd 0%,
+                    #084298 100%);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 450px;
+            border-radius: 16px;
+        }
+
+        .form-control {
+            padding: 12px;
+        }
+
+        .btn-primary {
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 991px) {
+            .login-card {
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid min-vh-100">
+        <div class="row min-vh-100">
+
+            <!-- Branding Section -->
+            <div class="col-lg-7 d-none d-lg-flex banking-banner align-items-center justify-content-center">
+                <div class="text-center text-white p-5">
+                    <h1 class="display-4 fw-bold">MyBank</h1>
+
+                    <p class="lead mt-3">
+                        Manage your finances securely anytime, anywhere.
+                    </p>
+
+                    <div class="row mt-5">
+                        <div class="col-md-4">
+                            <h4>24/7 Access</h4>
+                            <p>Bank whenever you need.</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h4>Secure Login</h4>
+                            <p>Industry-standard protection.</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h4>Fast Transfers</h4>
+                            <p>Send money in seconds.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Section -->
+            <div class="col-lg-5 d-flex align-items-center justify-content-center bg-light">
+
+                <div class="card shadow-lg border-0 login-card">
+                    <div class="card-body p-5">
+
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold">Welcome Back</h2>
+                            <p class="text-muted">
+                                Sign in to access your account
+                            </p>
+                        </div>
+
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+
+                        <form method="post" action="{{ url_for('api_routes.process_login') }}">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    Username
+                                </label>
+                                <input type="text" name="username" class="form-control" placeholder="Enter username"
+                                    required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    Password
+                                </label>
+                                <input type="password" name="password" class="form-control" placeholder="Enter password"
+                                    required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-2">
+                                Sign In
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

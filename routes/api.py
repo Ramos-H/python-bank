@@ -182,3 +182,13 @@ def pay_api():
         "amount": float(amount),
         "merchant_account": merchant_account
     }, 200
+
+
+@api_routes.route("/login", methods=["POST"])
+def process_login():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    # auth logic here
+
+    return redirect(url_for("web_routes.dashboard"))

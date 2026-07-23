@@ -9,6 +9,11 @@ def index():
     return redirect(url_for('web_routes.dashboard'))
 
 
+@web_routes.route("/login", methods=["GET"])
+def login():
+    return render_template("login.html")
+
+
 @web_routes.route("/dashboard")
 def dashboard():
     user_name = "Maria Makiling"
