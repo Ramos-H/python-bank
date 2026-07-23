@@ -1,14 +1,14 @@
 from flask import Flask
-import os
 from models import db
-from seed import get_db_uri, seed_db
+from seed import seed_db
 from routes import web, api
+import env
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get('SECRET_KEY', 'bank_secret_key')
+app.secret_key = env.vars['SECRET_KEY']
 
-app.config['SQLALCHEMY_DATABASE_URI'] = get_db_uri()
+app.config['SQLALCHEMY_DATABASE_URI'] = env.vars['SQLALCHEMY_DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
@@ -23,4 +23,4 @@ app.register_blueprint(web.web_routes)
 app.register_blueprint(api.api_routes, url_prefix="/api")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001)
+    app.run(host='0.0.0.0', port=env.vars['APP_PORT'])
