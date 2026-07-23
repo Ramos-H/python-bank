@@ -115,7 +115,7 @@
 
                 <div class="alert alert-info mt-4 text-center">
                     Redirecting to the dashboard in
-                    <strong><span id="countdown">5</span></strong>
+                    <strong><span id="countdown">10</span></strong>
                     seconds...
                 </div>
 
@@ -144,7 +144,7 @@
     <script>
         setTimeout(function () {
             window.location.href = "{{ url_for('web_routes.dashboard') }}";
-        }, 5000);
+        }, 1000 * 10);
     </script>
 </body>
 
