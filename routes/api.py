@@ -1,11 +1,11 @@
 from flask import request, redirect, url_for, Blueprint
-import os
 import requests
 from decimal import Decimal
 from models import db, Account, Transaction
 import random
 import qrcode
 from pathlib import Path
+import env
 
 api_routes = Blueprint('api_routes', __name__)
 
@@ -63,7 +63,7 @@ def process_payment():
         return f"Database error: {str(e)}", 500
 
     # Call back the e-commerce app to mark PAID
-    callback_url = os.environ.get('ECOMMERCE_CALLBACK_URL')
+    callback_url = env.vars['ECOMMERCE_CALLBACK_URL']
     if callback_url:
         try:
             payload = {
@@ -102,7 +102,7 @@ def get_qr_url():
     if amount is None:
         return {'error': 'amount not given.'}, 422
 
-    hostname="http://127.0.0.1:5001"
+    hostname=f"{env.vars['APP_HOSTNAME']}:{env.vars['APP_PORT']}"
     result = url_for('web_routes.confirmation', order_id=order_id, merchant_account="bloomcart-flowers", amount=amount)
     img = qrcode.make(f"{hostname}{result}")
 
@@ -161,7 +161,7 @@ def pay_api():
         db.session.rollback()
         return {"status": "error", "message": f"Database error: {str(e)}"}, 500
 
-    callback_url = os.environ.get('ECOMMERCE_CALLBACK_URL')
+    callback_url = env.vars['ECOMMERCE_CALLBACK_URL']
     if callback_url:
         try:
             payload = {
