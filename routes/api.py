@@ -83,15 +83,24 @@ def process_payment():
                             recipient=merchant_account,
                             date=tx.timestamp.strftime("%B %d, %Y")))
 
-@api_routes.route("/get-payment-link", methods=["GET"])
+@api_routes.route("/get-payment-link", methods=["POST"])
 def get_qr_url():
     if request.is_json:
         data = request.get_json()
     else:
         data = request.form
 
-    order_id = random.randint(1, 100_000_000_000)
-    amount = data.get("amount", 0)
+    order_id = data.get("order_id")
+    amount = data.get("amount")
+
+    if order_id is None and amount is None:
+        return {'error': 'order_id and amount not given.'}, 422
+    
+    if order_id is None:
+        return {'error': 'order_id not given.'}, 422
+    
+    if amount is None:
+        return {'error': 'amount not given.'}, 422
 
     hostname="http://127.0.0.1:5000"
     result = url_for('web_routes.confirmation', order_id=order_id, merchant_account="bloomcart-flowers", amount=amount)
