@@ -1,9 +1,5 @@
 FROM python:3.11-slim
 
-# Set arguments
-ARG GUNICORN_PORT=5001
-
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_RUN_PORT=5001
@@ -29,4 +25,4 @@ USER bankuser
 EXPOSE 5001
 
 # Command to run the application using gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:${GUNICORN_PORT}", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:5001", "app:app"]
