@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for, Blueprint
+from flask import request, redirect, url_for, Blueprint, session, flash
 import os
 import requests
 from decimal import Decimal
@@ -32,7 +32,10 @@ def process_payment():
     except Exception:
         return "Invalid amount", 400
 
-    user_name = "Maria Makiling"
+    if "user" not in session:
+        return redirect(url_for("web_routes.login"))
+
+    user_name = session["user"]
     
     customer = Account.query.filter_by(name=user_name, type='CONSUMER').first()
     merchant = Account.query.filter_by(name=merchant_account, type='MERCHANT').first()
@@ -102,7 +105,9 @@ def get_qr_url():
     if amount is None:
         return {'error': 'amount not given.'}, 422
 
-    hostname="http://127.0.0.1:5001"
+    # hostname="http://127.0.0.1:5001"
+    hostname="http://10.91.102.74:5001"
+
     result = url_for('web_routes.confirmation', order_id=order_id, merchant_account="bloomcart-flowers", amount=amount)
     img = qrcode.make(f"{hostname}{result}")
 
@@ -125,7 +130,13 @@ def pay_api():
     order_id = data.get('order_id')
     amount_str = data.get('amount')
     merchant_account = data.get('merchant_account')
-    customer_account = data.get('customer_account', 'Maria Makiling')
+    customer_account = session.get("user")
+
+    if not customer_account:
+        return {
+            "status": "error",
+            "message": "User not logged in"
+        }, 401
 
     if not order_id or not amount_str or not merchant_account:
         return {"status": "error", "message": "Missing required parameters"}, 400
@@ -186,9 +197,45 @@ def pay_api():
 
 @api_routes.route("/login", methods=["POST"])
 def process_login():
-    username = request.form.get("username")
-    password = request.form.get("password")
 
-    # auth logic here
+    username = request.form.get("username", "").lower()
+    password = request.form.get("password", "")
+
+    # Demo users
+    users = {
+        "maria": {
+            "password": "password123",
+            "account_name": "Maria Makiling"
+        },
+        "pedro": {
+            "password": "password123",
+            "account_name": "Pedro Penduko"
+        }
+    }
+
+    user = users.get(username)
+
+    if not user:
+        flash("Invalid username.", "danger")
+        return redirect(url_for("web_routes.login"))
+
+    if password != user["password"]:
+        flash("Invalid password.", "danger")
+        return redirect(url_for("web_routes.login"))
+
+    # Save logged-in user
+    session["user"] = user["account_name"]
+
+    if "pending_order" in session:
+        order = session.pop("pending_order")
+
+    return redirect(
+        url_for(
+            "web_routes.confirmation",
+            order_id=order["order_id"],
+            amount=order["amount"],
+            merchant_account=order["merchant_account"]
+        )
+    )
 
     return redirect(url_for("web_routes.dashboard"))

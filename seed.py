@@ -15,9 +15,9 @@ def get_db_uri():
         # Use an absolute SQLite file in the repo directory or in-memory
         if os.environ.get('FLASK_ENV') == 'testing':
             return 'sqlite:///:memory:'
-        return 'sqlite:///C:/Users/HRR83780/OneDrive - EastWest Banking Corporation/Documents/python-bank/bank.db'
+        return 'sqlite:///C:/Users/ABS83779/banking_app/python-bank/bank.db'
     
-    return f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    return f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}" 
 
 def seed_db(app=None):
     if app is None:
@@ -33,13 +33,31 @@ def seed_db(app=None):
         print("Seeding default accounts...")
         # Seeding consumers
         consumers = [
-            {"name": "Maria Makiling", "balance": Decimal("50000.00")},
-            {"name": "Pedro Penduko", "balance": Decimal("10000.00")}
+            {
+                "username": "maria",
+                "password": "password123",
+                "name": "Maria Makiling",
+                "balance": Decimal("50000.00")
+            },
+            {
+                "username": "pedro",
+                "password": "password123",
+                "name": "Pedro Penduko",
+                "balance": Decimal("10000.00")
+            }
         ]
+
         for c in consumers:
-            acc = Account.query.filter_by(name=c["name"]).first()
+            acc = Account.query.filter_by(username=c["username"]).first()
+
             if not acc:
-                acc = Account(name=c["name"], type="CONSUMER", balance=c["balance"])
+                acc = Account(
+                    username=c["username"], 
+                    password=c["password"], 
+                    name=c["name"], 
+                    type="CONSUMER", 
+                    balance=c["balance"]
+                )
                 db.session.add(acc)
                 print(f"Added consumer account: {c['name']} with balance {c['balance']}")
             else:
@@ -56,7 +74,13 @@ def seed_db(app=None):
         for m in merchants:
             acc = Account.query.filter_by(name=m["name"]).first()
             if not acc:
-                acc = Account(name=m["name"], type="MERCHANT", balance=Decimal("0.00"))
+                acc = Account(
+                    username=None,
+                    password=None,
+                    name=m["name"], 
+                    type="MERCHANT", 
+                    balance=Decimal("0.00")
+                )
                 db.session.add(acc)
                 print(f"Added merchant account: {m['name']}")
             else:

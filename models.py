@@ -7,7 +7,15 @@ class Account(db.Model):
     __tablename__ = 'accounts'
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), unique=True, nullable=False, index=True)
+
+    # Login credentials
+    username = db.Column(db.String(50), unique=True, nullable=True)
+    password = db.Column(db.String(255), nullable=True)
+
+    # Display name
+    name = db.Column(db.String(100), unique=True, nullable=False)
+
+    # Account information
     type = db.Column(db.String(20), nullable=False)  # CONSUMER or MERCHANT
     balance = db.Column(db.Numeric(15, 2), nullable=False, default=0.00)
 

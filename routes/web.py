@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 import datetime
 from models import Account, Transaction
 
@@ -6,7 +6,7 @@ web_routes = Blueprint('web_routes', __name__)
 
 @web_routes.route("/")
 def index():
-    return redirect(url_for('web_routes.dashboard'))
+    return redirect(url_for("web_routes.login"))
 
 
 @web_routes.route("/login", methods=["GET"])
@@ -16,7 +16,11 @@ def login():
 
 @web_routes.route("/dashboard")
 def dashboard():
-    user_name = "Maria Makiling"
+    if "user" not in session:
+        return redirect(url_for("web_routes.login"))
+
+    user_name = session["user"]
+    
     account = Account.query.filter_by(name=user_name, type='CONSUMER').first()
     
     if not account:
@@ -62,6 +66,15 @@ def confirmation():
     order_id = request.args.get('order_id', 'ORD-UNKNOWN')
     amount_str = request.args.get('amount', '0.00')
     merchant_account = request.args.get('merchant_account', 'unknown-merchant')
+
+    if "user" not in session:
+        session["pending_order"] = {
+            "order_id": order_id,
+            "amount": amount_str,
+            "merchant_account": merchant_account
+        }
+
+        return redirect(url_for("web_routes.login"))
 
     try:
         amount = float(amount_str)
