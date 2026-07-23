@@ -26,4 +26,4 @@ USER bankuser
 EXPOSE 5001
 
 # Command to run the application using gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:5001", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:${FLASK_RUN_PORT}", "app:app"]
