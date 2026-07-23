@@ -22,7 +22,7 @@ properties:
       - name: DB_NAME
         value: banking
       - name: ECOMMERCE_CALLBACK_URL
-        value: http://localhost:5001/payment-callback
+        value: http://localhost:5000/payment-callback
       - name: SECRET_KEY
         value: test_secret_key_123
   - name: ecommerce-app
@@ -33,7 +33,7 @@ properties:
           cpu: 1.0
           memoryInGB: 1.5
       ports:
-      - port: 5001
+      - port: 5000
       environmentVariables:
       - name: DB_HOST
         value: localhost
