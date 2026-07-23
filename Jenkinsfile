@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         // Configurable via Jenkins credentials / variables
-        REGISTRY = 'qrregistry.azurecr.io'
+        REGISTRY = 'flowershop.azurecr.io'
         IMAGE_NAME = 'banking-app'
         IMAGE = "${REGISTRY}/${IMAGE_NAME}"
         TAG = "${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'latest'}"

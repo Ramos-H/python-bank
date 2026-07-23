@@ -5,7 +5,7 @@ properties:
   containers:
   - name: banking-app
     properties:
-      image: qrregistry.azurecr.io/banking-app:latest
+      image: flowershop.azurecr.io/banking-app:latest
       resources:
         requests:
           cpu: 1.0
@@ -27,7 +27,7 @@ properties:
         value: test_secret_key_123
   - name: ecommerce-app
     properties:
-      image: qrregistry.azurecr.io/ecommerce-app:latest
+      image: flowershop.azurecr.io/ecommerce-app:latest
       resources:
         requests:
           cpu: 1.0
@@ -80,6 +80,6 @@ properties:
       storageAccountName: qrstorageaccount
       storageAccountKey: storagekeyplaceholder
   imageRegistryCredentials:
-  - server: qrregistry.azurecr.io
+  - server: flowershop.azurecr.io
     username: qrregistry
     password: registrykeyplaceholder
