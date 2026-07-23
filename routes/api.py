@@ -102,7 +102,7 @@ def get_qr_url():
     if amount is None:
         return {'error': 'amount not given.'}, 422
 
-    hostname="http://127.0.0.1:5000"
+    hostname="http://127.0.0.1:5001"
     result = url_for('web_routes.confirmation', order_id=order_id, merchant_account="bloomcart-flowers", amount=amount)
     img = qrcode.make(f"{hostname}{result}")
 

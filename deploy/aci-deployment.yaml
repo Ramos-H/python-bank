@@ -11,7 +11,7 @@ properties:
           cpu: 1.0
           memoryInGB: 1.5
       ports:
-      - port: 5000
+      - port: 5001
       environmentVariables:
       - name: DB_HOST
         value: localhost
@@ -44,7 +44,7 @@ properties:
       - name: DB_NAME
         value: ecommerce
       - name: BANKING_API_URL
-        value: http://localhost:5000
+        value: http://localhost:5001
   - name: mysql
     properties:
       image: mysql:8.0

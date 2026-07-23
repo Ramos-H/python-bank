@@ -19,7 +19,7 @@ spec:
         image: qrregistry.azurecr.io/banking-app:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 5000
+        - containerPort: 5001
         env:
         - name: DB_HOST
           valueFrom:
@@ -46,13 +46,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 5000
+            port: 5001
           initialDelaySeconds: 15
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /health
-            port: 5000
+            port: 5001
           initialDelaySeconds: 5
           periodSeconds: 10
         resources:

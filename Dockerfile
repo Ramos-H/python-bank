@@ -3,7 +3,7 @@ FROM python:3.11-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PORT=5000
+ENV PORT=5001
 
 # Create working directory
 WORKDIR /app
@@ -23,7 +23,7 @@ RUN chown -R bankuser:bankgroup /app
 USER bankuser
 
 # Expose port
-EXPOSE 5000
+EXPOSE 5001
 
 # Command to run the application using gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:5001", "app:app"]
