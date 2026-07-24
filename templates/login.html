@@ -101,37 +101,22 @@
                         {% endif %}
                         {% endwith %}
 
-<<<<<<< HEAD
-                        <form method="post" action="{{ url_for('api_routes.process_login') }}">
-                            <div class="mb-3">
-                                <label class="form-label">
-                                    Username
-                                </label>
-                                <input type="text" name="username" class="form-control" placeholder="Enter username"
-                                    required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">
-                                    Password
-                                </label>
-                                <input type="password" name="password" class="form-control" placeholder="Enter password"
-                                    required>
-=======
                         <!-- Pass next query param directly in form action URL -->
-                        <form method="post" action="{{ url_for('api_routes.process_login', next=request.args.get('next')) }}">
+                        <form method="post"
+                            action="{{ url_for('api_routes.process_login', next=request.args.get('next')) }}">
                             <!-- Hidden input field for POST body backup -->
                             <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
 
                             <div class="mb-3">
                                 <label class="form-label">Username</label>
-                                <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+                                <input type="text" name="username" class="form-control" placeholder="Enter username"
+                                    required>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
-                                <input type="password" name="password" class="form-control" placeholder="Enter password" required>
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
+                                <input type="password" name="password" class="form-control" placeholder="Enter password"
+                                    required>
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100 py-2">
