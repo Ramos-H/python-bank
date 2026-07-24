@@ -14,6 +14,22 @@ pipeline {
     }
 
     stages {
+
+        stage('Install Azure CLI') {
+            steps {
+                sh '''
+                    if ! command -v az >/dev/null 2>&1; then
+                        echo "Azure CLI not found. Installing..."
+                        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+                    else
+                        echo "Azure CLI already installed."
+                    fi
+
+                    az version
+                '''
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -101,7 +117,7 @@ pipeline {
         //     steps {
         //         sh '''
         //             . .venv/bin/activate
-
+        //
         //             # Example smoke test
         //             curl -f ${TEST_URL} || exit 1
         //         '''
