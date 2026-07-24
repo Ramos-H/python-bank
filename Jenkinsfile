@@ -54,7 +54,7 @@ pipeline {
                         ACR_NAME=$(echo ${REGISTRY} | cut -d'.' -f1)
 
                         # Login to Azure Container Registry
-                        az acr login --name ${ACR_NAME}
+                        az acr login --name ${ACR_NAME} --expose-token
 
                         # Build Docker image
                         docker build \
