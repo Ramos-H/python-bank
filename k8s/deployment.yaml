@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: banking-app
-        image: qrregistry.azurecr.io/banking-app:latest
+        image: flowershop.azurecr.io/banking-app:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5001
