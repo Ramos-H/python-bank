@@ -67,6 +67,17 @@ def confirmation():
     amount_str = request.args.get('amount', '0.00')
     merchant_account = request.args.get('merchant_account', 'bloomcart-flowers')
 
+    # Require bank login before showing the payment confirmation page
+    if "user" not in session:
+        next_url = url_for(
+            'web_routes.confirmation',
+            order_id=order_id,
+            amount=amount_str,
+            merchant_account=merchant_account
+        )
+        flash("Please log in with your bank account to proceed.", "warning")
+        return redirect(url_for("web_routes.login", next=next_url))
+
     try:
         amount = float(amount_str)
     except ValueError:
@@ -80,11 +91,9 @@ def confirmation():
         "total": amount
     }
 
-    # Use logged-in user if available, otherwise show a generic label
-    user_label = session.get('user', 'Guest')
     payment = {
         "method": "NorthSouth Account Transfer",
-        "masked_account": f"{user_label} (****1234)"
+        "masked_account": f"{session['user']} (****1234)"
     }
 
     return render_template(

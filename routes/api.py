@@ -34,9 +34,20 @@ def process_payment():
         flash("Invalid payment amount format.", "danger")
         return redirect(url_for("web_routes.payment_done"))
 
-    # --- Auth bypassed: record transaction without account balance checks ---
-    user_name = session.get("user", "guest")
+    # Enforce bank login — if not logged in, redirect to login then back to confirmation
+    if "user" not in session:
+        next_url = url_for(
+            'web_routes.confirmation',
+            order_id=order_id,
+            amount=amount_str,
+            merchant_account=merchant_account
+        )
+        flash("Please log in to confirm your payment.", "warning")
+        return redirect(url_for("web_routes.login", next=next_url))
 
+    user_name = session["user"]
+
+    # Record transaction (balance deduction skipped until full auth is wired)
     try:
         tx = Transaction(
             order_id=order_id,
@@ -200,53 +211,27 @@ def pay_api():
 
 @api_routes.route("/login", methods=["POST"])
 def process_login():
-    username = request.form.get("username", "").lower()
+    username = request.form.get("username", "").strip().lower()
     password = request.form.get("password", "")
 
     next_url = request.form.get("next") or request.args.get("next")
 
-    users = {
-        "maria": {
-            "password": "password123",
-            "account_name": "Maria Makiling"
-        },
-        "pedro": {
-            "password": "password123",
-            "account_name": "Pedro Penduko"
-        }
-    }
+    # Look up user in the bank DB
+    account = Account.query.filter_by(username=username, type='CONSUMER').first()
 
-    user = users.get(username)
-
-    if not user:
+    if not account:
         flash("Invalid username.", "danger")
-        return redirect(url_for("web_routes.login", next=next_url if next_url else None))
+        return redirect(url_for("web_routes.login", next=next_url or ""))
 
-    if password != user["password"]:
+    if account.password != password:
         flash("Invalid password.", "danger")
-        return redirect(url_for("web_routes.login", next=next_url if next_url else None))
+        return redirect(url_for("web_routes.login", next=next_url or ""))
 
-    session["user"] = user["account_name"]
+    # Store the account name in session (used by process_payment and dashboard)
+    session["user"] = account.name
 
+    # Redirect to next_url if provided (e.g. back to confirmation page after login)
     if next_url:
-        session.pop("next_url", None)
-        session.pop("pending_order", None)
         return redirect(next_url)
-
-    if "next_url" in session:
-        target = session.pop("next_url")
-        session.pop("pending_order", None)
-        return redirect(target)
-
-    if "pending_order" in session:
-        order = session.pop("pending_order")
-        return redirect(
-            url_for(
-                "web_routes.confirmation",
-                order_id=order["order_id"],
-                amount=order["amount"],
-                merchant_account=order["merchant_account"]
-            )
-        )
 
     return redirect(url_for("web_routes.dashboard"))
