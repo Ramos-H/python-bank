@@ -10,6 +10,8 @@ app.secret_key = env.vars['SECRET_KEY']
 
 app.config['SQLALCHEMY_DATABASE_URI'] = env.vars['SQLALCHEMY_DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['BANK_PUBLIC_HOST'] = env.vars['BANK_PUBLIC_HOST']
+app.config['ECOMMERCE_CALLBACK_URL'] = env.vars['ECOMMERCE_CALLBACK_URL']
 db.init_app(app)
 
 # Auto seed database on startup (Dev / Test)

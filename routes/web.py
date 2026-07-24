@@ -20,15 +20,9 @@ def dashboard():
         return redirect(url_for("web_routes.login"))
 
     user_name = session["user"]
-<<<<<<< HEAD
-    
-    account = Account.query.filter_by(name=user_name, type='CONSUMER').first()
-    
-=======
 
     account = Account.query.filter_by(name=user_name, type='CONSUMER').first()
 
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
     if not account:
         available_balance = "0.00"
         pending_balance = "0.00"
@@ -38,41 +32,25 @@ def dashboard():
         available_balance = f"{account.balance:,.2f}"
         pending_balance = "0.00"
         total_balance = f"{account.balance:,.2f}"
-<<<<<<< HEAD
-        
-        txs = Transaction.query.filter(
-            (Transaction.from_acct == user_name) | (Transaction.to_acct == user_name)
-        ).order_by(Transaction.timestamp.desc()).all()
-        
-=======
 
         txs = Transaction.query.filter(
             (Transaction.from_acct == user_name) | (Transaction.to_acct == user_name)
         ).order_by(Transaction.timestamp.desc()).all()
 
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
         transactions_list = []
         for tx in txs:
             is_credit = tx.to_acct == user_name
             desc = f"Received from {tx.from_acct}" if is_credit else f"Paid to {tx.to_acct}"
             if tx.order_id:
                 desc += f" (Order: {tx.order_id})"
-<<<<<<< HEAD
-                
-=======
 
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
             transactions_list.append({
                 "date": tx.timestamp.strftime("%Y-%m-%d %H:%M"),
                 "description": desc,
                 "amount": f"{tx.amount:,.2f}",
                 "status": "Completed"
             })
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
     return render_template(
         "dashboard.html",
         user_name=user_name,
@@ -87,35 +65,7 @@ def dashboard():
 def confirmation():
     order_id = request.args.get('order_id', 'ORD-UNKNOWN')
     amount_str = request.args.get('amount', '0.00')
-    merchant_account = request.args.get('merchant_account', 'unknown-merchant')
-
-    if "user" not in session:
-<<<<<<< HEAD
-=======
-        # Construct destination URL
-        next_url = url_for(
-            'web_routes.confirmation',
-            order_id=order_id,
-            amount=amount_str,
-            merchant_account=merchant_account
-        )
-
-        # Save order details AND explicit return URL into session as fallback
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
-        session["pending_order"] = {
-            "order_id": order_id,
-            "amount": amount_str,
-            "merchant_account": merchant_account
-        }
-<<<<<<< HEAD
-
-        return redirect(url_for("web_routes.login"))
-=======
-        session["next_url"] = next_url
-        session.modified = True
-
-        return redirect(url_for("web_routes.login", next=next_url))
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
+    merchant_account = request.args.get('merchant_account', 'bloomcart-flowers')
 
     try:
         amount = float(amount_str)
@@ -130,13 +80,11 @@ def confirmation():
         "total": amount
     }
 
+    # Use logged-in user if available, otherwise show a generic label
+    user_label = session.get('user', 'Guest')
     payment = {
         "method": "NorthSouth Account Transfer",
-<<<<<<< HEAD
-        "masked_account": "Maria Makiling (****1234)"
-=======
-        "masked_account": f"{session.get('user')} (****1234)"
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
+        "masked_account": f"{user_label} (****1234)"
     }
 
     return render_template(
@@ -146,10 +94,7 @@ def confirmation():
         merchant_account=merchant_account
     )
 
-<<<<<<< HEAD
-=======
 
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
 @web_routes.route("/confirmed")
 def confirmed():
     ref = request.args.get('ref', 'TXN-UNKNOWN')
@@ -165,3 +110,14 @@ def confirmed():
         payment_date=date,
         payment_method="Bank Transfer"
     )
+
+
+@web_routes.route("/payment-done")
+def payment_done():
+    """Phone sees this page after confirming payment via QR scan.
+    The laptop's waiting.html will detect PAID via polling and show success there.
+    """
+    ref = request.args.get('ref', 'TXN-UNKNOWN')
+    order_id = request.args.get('order_id', '')
+    amount = request.args.get('amount', '0.00')
+    return render_template("payment_done.html", ref=ref, order_id=order_id, amount=amount)

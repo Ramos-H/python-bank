@@ -20,6 +20,8 @@ __pycache__/
 # Databases
 *.db
 *.sqlite
+# Generated QR code images
+static/qr-*.png
 
 # Testing and coverage
 .pytest_cache/

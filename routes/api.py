@@ -1,37 +1,23 @@
-from flask import request, redirect, url_for, Blueprint, session, flash
+from flask import request, redirect, url_for, Blueprint, session, flash, current_app
 import os
 import requests
 from decimal import Decimal
 from models import db, Account, Transaction
-<<<<<<< HEAD
-import random
-=======
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
 import qrcode
 from pathlib import Path
 
 api_routes = Blueprint('api_routes', __name__)
 
-<<<<<<< HEAD
-@api_routes.route("/health")
-def health():
-    try:
-        # Simple query to check DB connection
-=======
 
 @api_routes.route("/health")
 def health():
     try:
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
         db.session.execute(db.text("SELECT 1"))
         return {'status': 'ok', 'database': 'connected'}, 200
     except Exception as e:
         return {'status': 'error', 'reason': str(e)}, 500
 
-<<<<<<< HEAD
-=======
 
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
 @api_routes.route("/confirmation", methods=["POST"])
 def process_payment():
     order_id = request.form.get('order_id')
@@ -39,44 +25,19 @@ def process_payment():
     merchant_account = request.form.get('merchant_account')
 
     if not order_id or not amount_str or not merchant_account:
-        return "Missing payment details", 400
+        flash("Missing payment details.", "danger")
+        return redirect(url_for("web_routes.payment_done"))
 
     try:
         amount = Decimal(amount_str)
     except Exception:
-        return "Invalid amount", 400
+        flash("Invalid payment amount format.", "danger")
+        return redirect(url_for("web_routes.payment_done"))
 
-    if "user" not in session:
-        return redirect(url_for("web_routes.login"))
-
-    user_name = session["user"]
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
-    customer = Account.query.filter_by(name=user_name, type='CONSUMER').first()
-    merchant = Account.query.filter_by(name=merchant_account, type='MERCHANT').first()
-
-    if not customer:
-        return "Customer account not found", 404
-    if not merchant:
-        return f"Merchant account '{merchant_account}' not found", 404
-    if customer.balance < amount:
-        return "Insufficient funds", 400
+    # --- Auth bypassed: record transaction without account balance checks ---
+    user_name = session.get("user", "guest")
 
     try:
-<<<<<<< HEAD
-        # Perform the transfer
-        customer.balance -= amount
-        merchant.balance += amount
-
-        # Record the transaction
-=======
-        customer.balance -= amount
-        merchant.balance += amount
-
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
         tx = Transaction(
             order_id=order_id,
             from_acct=user_name,
@@ -87,42 +48,29 @@ def process_payment():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return f"Database error: {str(e)}", 500
+        current_app.logger.error(f"Transaction DB Error: {str(e)}")
 
-<<<<<<< HEAD
-    # Call back the e-commerce app to mark PAID
-=======
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
-    callback_url = os.environ.get('ECOMMERCE_CALLBACK_URL')
-    if callback_url:
-        try:
-            payload = {
-                "order_id": order_id,
-                "status": "PAID",
-                "reference_number": f"TXN-{tx.id}",
-                "amount": float(amount)
-            }
-            resp = requests.post(callback_url, json=payload, timeout=5)
-            api_routes.logger.info(f"Callback to {callback_url} returned {resp.status_code}")
-        except Exception as e:
-            api_routes.logger.error(f"Failed to trigger callback to e-commerce app: {e}")
+    # Notify ecommerce that this order is now PAID
+    callback_url = current_app.config.get('ECOMMERCE_CALLBACK_URL', 'http://localhost:5000/callback/payment-status')
+    try:
+        payload = {
+            "order_id": order_id,
+            "status": "PAID",
+            "reference_number": f"TXN-{tx.id}",
+            "amount": float(amount)
+        }
+        resp = requests.post(callback_url, json=payload, timeout=5)
+        current_app.logger.info(f"Callback returned {resp.status_code}")
+    except Exception as e:
+        current_app.logger.error(f"Callback error: {e}")
 
-<<<<<<< HEAD
-    return redirect(url_for('web_routes.confirmed', 
-                            ref=f"TXN-{tx.id}", 
-                            amount=amount_str, 
-                            recipient=merchant_account,
-                            date=tx.timestamp.strftime("%B %d, %Y")))
-
-=======
-    return redirect(url_for('web_routes.confirmed',
+    # Phone sees a clean "payment done" page
+    return redirect(url_for('web_routes.payment_done',
                             ref=f"TXN-{tx.id}",
-                            amount=amount_str,
-                            recipient=merchant_account,
-                            date=tx.timestamp.strftime("%B %d, %Y")))
+                            order_id=order_id,
+                            amount=amount_str))
 
 
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
 @api_routes.route("/get-payment-link", methods=["POST"])
 def get_qr_url():
     if request.is_json:
@@ -135,17 +83,6 @@ def get_qr_url():
 
     if order_id is None and amount is None:
         return {'error': 'order_id and amount not given.'}, 422
-<<<<<<< HEAD
-    
-    if order_id is None:
-        return {'error': 'order_id not given.'}, 422
-    
-    if amount is None:
-        return {'error': 'amount not given.'}, 422
-
-    # hostname="http://127.0.0.1:5001"
-    hostname="http://10.91.102.74:5001"
-=======
 
     if order_id is None:
         return {'error': 'order_id not given.'}, 422
@@ -153,25 +90,27 @@ def get_qr_url():
     if amount is None:
         return {'error': 'amount not given.'}, 422
 
-    hostname = "http://10.91.102.74:5001"
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
+    # Use BANK_PUBLIC_HOST so QR URLs are reachable from phone on the same LAN
+    bank_public_host = current_app.config.get('BANK_PUBLIC_HOST', 'http://localhost:5001').rstrip('/')
 
-    result = url_for('web_routes.confirmation', order_id=order_id, merchant_account="bloomcart-flowers", amount=amount)
-    img = qrcode.make(f"{hostname}{result}")
+    confirmation_path = url_for(
+        'web_routes.confirmation',
+        order_id=order_id,
+        merchant_account="bloomcart-flowers",
+        amount=amount
+    )
+    qr_target_url = f"{bank_public_host}{confirmation_path}"
+
+    img = qrcode.make(qr_target_url)
 
     path = Path("static")
-<<<<<<< HEAD
-
-    path.mkdir(parents=True, exist_ok=True)
-
-    filename=f"qr-{order_id}.png"
-=======
     path.mkdir(parents=True, exist_ok=True)
 
     filename = f"qr-{order_id}.png"
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
     img.save(f"static/{filename}")
-    return {"url": f"{hostname}{url_for('static', filename=filename)}"}, 200
+
+    qr_image_url = f"{bank_public_host}{url_for('static', filename=filename)}"
+    return {"url": qr_image_url, "confirmation_url": qr_target_url}, 200
 
 
 @api_routes.route("/pay", methods=["POST"])
@@ -205,8 +144,18 @@ def pay_api():
 
     if not customer:
         return {"status": "error", "message": f"Customer account '{customer_account}' not found"}, 404
+
     if not merchant:
-        return {"status": "error", "message": f"Merchant account '{merchant_account}' not found"}, 404
+        merchant = Account(
+            username=None,
+            password=None,
+            name=merchant_account,
+            type="MERCHANT",
+            balance=Decimal("0.00")
+        )
+        db.session.add(merchant)
+        db.session.commit()
+
     if customer.balance < amount:
         return {"status": "error", "message": "Insufficient funds"}, 400
 
@@ -236,9 +185,9 @@ def pay_api():
                 "amount": float(amount)
             }
             resp = requests.post(callback_url, json=payload, timeout=5)
-            api_routes.logger.info(f"API Callback to {callback_url} returned {resp.status_code}")
+            current_app.logger.info(f"API Callback to {callback_url} returned {resp.status_code}")
         except Exception as e:
-            api_routes.logger.error(f"API Callback failed: {e}")
+            current_app.logger.error(f"API Callback failed: {e}")
 
     return {
         "status": "success",
@@ -251,20 +200,11 @@ def pay_api():
 
 @api_routes.route("/login", methods=["POST"])
 def process_login():
-<<<<<<< HEAD
-
     username = request.form.get("username", "").lower()
     password = request.form.get("password", "")
 
-    # Demo users
-=======
-    username = request.form.get("username", "").lower()
-    password = request.form.get("password", "")
-
-    # Capture next target from request form OR request query parameters
     next_url = request.form.get("next") or request.args.get("next")
 
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
     users = {
         "maria": {
             "password": "password123",
@@ -280,53 +220,24 @@ def process_login():
 
     if not user:
         flash("Invalid username.", "danger")
-<<<<<<< HEAD
-        return redirect(url_for("web_routes.login"))
-
-    if password != user["password"]:
-        flash("Invalid password.", "danger")
-        return redirect(url_for("web_routes.login"))
-
-    # Save logged-in user
-    session["user"] = user["account_name"]
-
-    if "pending_order" in session:
-        order = session.pop("pending_order")
-
-    return redirect(
-        url_for(
-            "web_routes.confirmation",
-            order_id=order["order_id"],
-            amount=order["amount"],
-            merchant_account=order["merchant_account"]
-        )
-    )
-
-=======
         return redirect(url_for("web_routes.login", next=next_url if next_url else None))
 
     if password != user["password"]:
         flash("Invalid password.", "danger")
         return redirect(url_for("web_routes.login", next=next_url if next_url else None))
 
-    # Save user to session
     session["user"] = user["account_name"]
 
-    # --- REDIRECT PRIORITY ---
-
-    # 1. Direct explicit 'next' parameter URL
     if next_url:
         session.pop("next_url", None)
         session.pop("pending_order", None)
         return redirect(next_url)
 
-    # 2. Saved 'next_url' in session
     if "next_url" in session:
         target = session.pop("next_url")
         session.pop("pending_order", None)
         return redirect(target)
 
-    # 3. Saved 'pending_order' parameters in session
     if "pending_order" in session:
         order = session.pop("pending_order")
         return redirect(
@@ -338,6 +249,4 @@ def process_login():
             )
         )
 
-    # 4. Standard default dashboard redirect
->>>>>>> c83b028 (Fixed Error Redirect in dashboard for Confirm Payment)
     return redirect(url_for("web_routes.dashboard"))

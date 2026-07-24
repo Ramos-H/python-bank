@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Payment Successful</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0fff4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .checkmark {
+            font-size: 5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center px-4">
+        <div class="checkmark mb-3">✅</div>
+        <h2 class="fw-bold text-success">Payment Confirmed!</h2>
+        <p class="text-muted mt-2">Your payment has been processed successfully.</p>
+
+        <div class="card mt-4 shadow-sm border-0 text-start">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Reference</span>
+                    <strong>{{ ref }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Order ID</span>
+                    <strong>{{ order_id }}</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Amount Paid</span>
+                    <strong class="text-success">₱{{ "%.2f"|format(amount|float) }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <p class="mt-4 text-muted small">You can close this page and return to your device.</p>
+    </div>
+</body>
+</html>
