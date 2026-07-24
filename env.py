@@ -32,5 +32,6 @@ vars: dict[str, Any] = {
     'SECRET_KEY': os.environ.get('SECRET_KEY', 'super-secret-flower-key'),
     'BANK_API_URL': os.environ.get('BANK_API_URL', 'http://localhost:5001'),
     'BANK_PUBLIC_HOST': os.environ.get('BANK_PUBLIC_HOST', 'http://localhost:5001'),
+    'ECOMMERCE_CALLBACK_URL': os.environ.get('ECOMMERCE_CALLBACK_URL', 'http://localhost:5001'),
     'SQLALCHEMY_DATABASE_URI': _build_db_uri(),
 }
