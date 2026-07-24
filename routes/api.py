@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for, Blueprint, session, flash, current_app
+from flask import request, redirect, url_for, Blueprint, session, flash, current_app, render_template
 import os
 import requests
 from decimal import Decimal
@@ -47,6 +47,18 @@ def process_payment():
 
     user_name = session["user"]
 
+    # Verify the logged-in bank user matches the ecommerce user who placed the order
+    payer_username = request.form.get('payer_username', '')
+    if payer_username:
+        bank_account = Account.query.filter_by(name=user_name, type='CONSUMER').first()
+        bank_username = bank_account.username if bank_account else None
+        if bank_username != payer_username:
+            return render_template(
+                "account_mismatch.html",
+                bank_user=user_name,
+                payer_username=payer_username
+            ), 403
+
     # Record transaction (balance deduction skipped until full auth is wired)
     try:
         tx = Transaction(
@@ -91,6 +103,7 @@ def get_qr_url():
 
     order_id = data.get("order_id")
     amount = data.get("amount")
+    payer_username = data.get("payer_username", "")
 
     if order_id is None and amount is None:
         return {'error': 'order_id and amount not given.'}, 422
@@ -108,7 +121,8 @@ def get_qr_url():
         'web_routes.confirmation',
         order_id=order_id,
         merchant_account="bloomcart-flowers",
-        amount=amount
+        amount=amount,
+        payer_username=payer_username
     )
     qr_target_url = f"{bank_public_host}{confirmation_path}"
 

@@ -66,6 +66,7 @@ def confirmation():
     order_id = request.args.get('order_id', 'ORD-UNKNOWN')
     amount_str = request.args.get('amount', '0.00')
     merchant_account = request.args.get('merchant_account', 'bloomcart-flowers')
+    payer_username = request.args.get('payer_username', '')
 
     # Require bank login before showing the payment confirmation page
     if "user" not in session:
@@ -73,7 +74,8 @@ def confirmation():
             'web_routes.confirmation',
             order_id=order_id,
             amount=amount_str,
-            merchant_account=merchant_account
+            merchant_account=merchant_account,
+            payer_username=payer_username
         )
         flash("Please log in with your bank account to proceed.", "warning")
         return redirect(url_for("web_routes.login", next=next_url))
@@ -100,7 +102,8 @@ def confirmation():
         "confirmation.html",
         order=order,
         payment=payment,
-        merchant_account=merchant_account
+        merchant_account=merchant_account,
+        payer_username=payer_username
     )
 
 
