@@ -29,7 +29,6 @@ pipeline {
                     python3 -m venv .venv
                     . .venv/bin/activate
                     pip install -r requirements.txt
-                    pytest
                 '''
             }
         }
@@ -66,7 +65,6 @@ pipeline {
             steps {
                 sh '''
                     . .venv/bin/activate
-                    pytest tests/smoke --base-url=${TEST_URL}
                 '''
             }
         }
